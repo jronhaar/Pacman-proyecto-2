@@ -29,8 +29,10 @@ direction = 0
 direction_command = 0
 counter = 0
 valid_turns = [False, False, False, False] # R, L, UP, Down
-player_speed = 3
-
+player_speed = 2
+score = 0
+def check_colision():
+    pass
 # codigo del cuadrado.
 def draw_board():
     num1 = ((HEIGHT - 50) // 32)
@@ -155,38 +157,39 @@ while run:
     center_y = player_y + 24
     valid_turns = check_position(center_x, center_y)
     player_x, player_y = move_player(player_x, player_y)
+    #score = check_colision(score)
 
-for event in pygame.event.get():
-    if event.type == pygame.QUIT:
-        run = False
-    if event.type == pygame.KEYDOWN:
-        if event.key == pygame.K_RIGHT:
-            direction_command = 0
-        elif event.key == pygame.K_LEFT:
-            direction_command = 1
-        elif event.key == pygame.K_UP:
-            direction_command = 2
-        elif event.key == pygame.K_DOWN:
-            direction_command = 3
-    if event.type == pygame.KEYUP:
-        if event.key == pygame.K_RIGHT and direction_command == 0:
-            direction_command = direction
-        if event.key == pygame.K_LEFT and direction_command == 1:
-            direction_command = direction
-        if event.key == pygame.K_UP and direction_command == 2:
-            direction_command = direction
-        if event.key == pygame.K_DOWN and direction_command == 3:
-            direction_command = direction
 
-    for i in range(4):
-        if direction_command == i and valid_turns[i]:
-            direction = i
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            run = False
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_RIGHT:
+                direction_command = 0
+            elif event.key == pygame.K_LEFT:
+                direction_command = 1
+            elif event.key == pygame.K_UP:
+                direction_command = 2
+            elif event.key == pygame.K_DOWN:
+                direction_command = 3
+        if event.type == pygame.KEYUP:
+            if event.key == pygame.K_RIGHT and direction_command == 0:
+                direction_command = direction
+            if event.key == pygame.K_LEFT and direction_command == 1:
+                direction_command = direction
+            if event.key == pygame.K_UP and direction_command == 2:
+                direction_command = direction
+            if event.key == pygame.K_DOWN and direction_command == 3:
+                direction_command = direction
+
+        for i in range(4):
+            if direction_command == i and valid_turns[i]:
+                direction = i
     if player_x > 900:
         player_x = -47
     elif player_x < -50:
         player_x = 897
 
-
-
     pygame.display.flip()
+
 pygame.quit()
