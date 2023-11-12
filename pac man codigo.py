@@ -27,38 +27,43 @@ dead_img = pygame.transform.scale(pygame.image.load(f'ghost_images/dead.png'), (
 player_x = 450
 player_y = 663
 direction = 0
-direction_command = 0
-rojo_x = 56
-rojo_y = 58
-rojo_direction = 2
-pink_x = 440
-pink_y = 388
-pink_direction = 2
-azul_x = 440
-azul_y = 438
-azul_direction = 2
-naranja_x = 440
-naranja_y = 438
-naranja_direction = 2
+blinky_x = 56
+blinky_y = 58
+blinky_direction = 0
+inky_x = 440
+inky_y = 388
+inky_direction = 2
+pinky_x = 440
+pinky_y = 438
+pinky_direction = 2
+clyde_x = 440
+clyde_y = 438
+clyde_direction = 2
 counter = 0
 valid_turns = [False, False, False, False] # R, L, UP, Down
 player_speed = 2
 score = 0
 powerUp = False
 powerUp_count = 0
-ghosts_comidos = [False, False,False,False]
+eaten_ghost = [False, False,False,False]
 targets = [(player_x, player_y), (player_x, player_y), (player_x, player_y), (player_x, player_y)]
-rojo_dead = False
-pink_dead = False
-azul_dead = False
-naranja_dead = False
-rojo_box = False
-pink_box = False
-azul_box = False
-naranja_box = False
+blinky_dead = False
+inky_dead = False
+clyde_dead = False
+pinky_dead = False
+blinky_box = False
+inky_box = False
+clyde_box = False
+pinky_box = False
 moving = False
+ghost_speeds = [2, 2, 2, 2]
+startup_counter = 0
+game_over = False
+game_won = False
 count_inicio = 0
 vida = 5
+direction_command = 0
+
 
 class Ghost:
     def __init__(self, x_coord, y_coord, target, speed, img, direct, dead, box, id):
@@ -77,9 +82,9 @@ class Ghost:
         self.rect = self.draw()
 
     def draw(self):
-        if (not powerUp and not self.dead) or (ghosts_comidos[self.id] and powerUp and not self.dead):
+        if (not powerUp and not self.dead) or (eaten_ghost[self.id] and powerUp and not self.dead):
             screen.blit(self.img, (self.x_pos, self.y_pos))
-        elif powerUp and not self.dead and not ghosts_comidos[self.id]:
+        elif powerUp and not self.dead and not eaten_ghost[self.id]:
             screen.blit(spooked_img, (self.x_pos, self.y_pos))
         else:
             screen.blit(dead_img, (self.x_pos, self.y_pos))
@@ -660,7 +665,7 @@ def draw_texto():
         pygame.draw.circle(screen,'red',(50, 550),15)
     for i in range(vida):
         screen.blit(pygame.transform.scale(player_images[0],(30, 30)), (650 + i * 40, 915)) # i * 40 hace que se mueva 40 pix a la derecha
-def check_colision(scor, powerUp, powerUp_count, ghosts_comidos):
+def check_colision(scor, powerUp, powerUp_count, eaten_ghost):
     num1 = (HEIGHT - 50) // 32
     num2 = WIDTH // 30
     if 0 < player_x < 870:
@@ -672,9 +677,9 @@ def check_colision(scor, powerUp, powerUp_count, ghosts_comidos):
             scor += 50
             powerUp = True
             powerUp_count = 0
-            ghosts_comidos = [False,False,False,False]
+            eaten_ghost = [False,False,False,False]
 
-    return scor, powerUp,powerUp_count,ghosts_comidos
+    return scor, powerUp,powerUp_count, eaten_ghost
 
 # codigo del cuadrado.
 def draw_board():
@@ -824,6 +829,7 @@ while run:
             direction_command = None
 
     if not paused:
+        elapsed_time = time.time() - start_time
         # Handle player movement based on keyboard input
         if direction_command is not None and valid_turns[direction_command]:
             direction = direction_command
@@ -849,7 +855,7 @@ while run:
         valid_turns = check_position(center_x, center_y)
         if moving:
             player_x, player_y = move_player(player_x, player_y)
-        score, powerUp, powerUp_count, ghosts_comidos = check_colision(score, powerUp, powerUp_count, ghosts_comidos)
+        score, powerUp, powerUp_count, eaten_ghost = check_colision(score, powerUp, powerUp_count,eaten_ghost)
 
 
 
@@ -861,7 +867,7 @@ while run:
         screen.blit(font_surface, (50, 150))
         font_surface = font.render(f"Player Position Y: ({player_y})", True, (255, 255, 255))
         screen.blit(font_surface, (50, 200))
-        elapsed_time = time.time() - start_time
+
         font_surface = font.render(f"Elapsed Time: {int(elapsed_time)} seconds", True, (255, 255, 255))
         screen.blit(font_surface, (50, 100))
         font_surface = font.render(f"Controles:", True, (255, 255, 255))
